@@ -1,98 +1,119 @@
 <template>
-  <el-container>
-    <!-- 组件选择区域 -->
-    <el-aside>
-      <div class="components-list">
-        <div class="widget-group-title">一排4个或者轮播8个</div>
-        <!-- 拖动复制，禁止外部拖入，禁止拖动排序 -->
-        <draggable
-          element="ul"
-          :list="basicComponents"
-          :options="{group:{ name:'people', pull:'clone',put:false},sort:false, ghostClass: 'ghost'}"
-          @end="handleMoveEnd"
-          @start="handleMoveStart"
-          :move="handleMove"
-        >
-          <li class="widget-edit-label"  v-for="(item, index) in basicComponents" :key="index">
-            <a>
-              <icon class="icon" :name="item.icon"></icon>
-              <span>{{item.name}}</span>
-            </a>
+  <el-container style="height:100%;">
+    <el-aside></el-aside>
+    <!-- 左侧内容 -->
+    <el-aside class="left-container">
+      <div class="widget-group-title">布局一</div>
+      <draggable
+        class="list-group"
+        tag="ul"
+        :list="list"
+        v-bind="leftDragOptions"
+        :move="onMove"
+        @start="isDragging=true"
+        @end="isDragging=false"
+      >
+        <transition-group type="transition" :name="'flip-list'">
+          <li v-for="element in list" :key="element.order">
+            <img width="100%" :src="element.src" alt="占位图" srcset />
           </li>
-        </draggable>
-      </div>
+        </transition-group>
+      </draggable>
     </el-aside>
-    <!-- 预览区 -->
-    <el-aside class="center-container" style="width:750px" direction="vertical">
-      <el-header class="title-bar">
-        <h3>
-          <i class="el-icon-view"></i> 手机预览
-        </h3>
-      </el-header>
-      <el-main>
-        <main-weidget ref="widgetForm" :data="widgetForm" :select.sync="widgetFormSelect"></main-weidget>
-      </el-main>
+    <!-- 主体内容 -->
+    <el-aside style="width:450px" class="center-container">
+      <draggable element="span" v-model="list2" v-bind="mainDragOptions" :move="onMove">
+        <transition-group name="no" class="list-group" tag="ul">
+          <li class="list-group-item" v-for="element in list2" :key="element.order">
+            <img width="100%" :src="element.src" alt="占位图" srcset />
+          </li>
+        </transition-group>
+      </draggable>
     </el-aside>
-    <!-- 组件设置区 -->
-    <el-container style="width: 500px;"></el-container>
+    <el-container style="background:blue">
+      <pre>{{listString}}</pre>
+      <pre>{{list2String}}</pre>
+    </el-container>
   </el-container>
 </template>
 
 <script>
 import draggable from "vuedraggable";
-import MainWeidget from "./MainWeidget"
+const images = [
+  "https://dummyimage.com/750x400/cccccc/ffffff.png&text=Type01",
+  "https://dummyimage.com/750x400/cccccc/ffffff.png&text=Type02",
+  "https://dummyimage.com/750x400/cccccc/ffffff.png&text=Type03",
+  "https://dummyimage.com/750x400/cccccc/ffffff.png&text=Type04",
+  "https://dummyimage.com/750x400/cccccc/ffffff.png&text=Type05",
+  "https://dummyimage.com/750x400/cccccc/ffffff.png&text=Type06",
+  "https://dummyimage.com/750x400/cccccc/ffffff.png&text=Type07",
+  "https://dummyimage.com/750x400/cccccc/ffffff.png&text=Type08"
+];
 export default {
-  name: "demo",
+  name: "hello",
   components: {
-    draggable,
-    MainWeidget
+    draggable
   },
   data() {
     return {
-      basicComponents: [
-        {
-          type: "input",
-          name: "单行文本",
-          icon: "regular/keyboard",
-          options: {
-            width: "100%",
-            defaultValue: "",
-            required: false,
-            dataType: "string",
-            pattern: ""
-          }
-        },
-        {
-          type: "textarea",
-          name: "多行文本",
-          icon: "regular/keyboard",
-          options: {
-            width: "100%",
-            defaultValue: "",
-            required: false,
-            pattern: ""
-          }
-        }
-      ],
-            widgetForm: {
-        list: [],
-        config: {
-          labelWidth: 100,
-          labelPosition: 'top'
-        },
-      },
-      widgetFormSelect:null
+      list: images.map((src, index) => {
+        return { src, order: index + 1 };
+      }),
+      list2: [],
+      editable: true,
+      isDragging: false,
+      delayedDragging: false
     };
   },
   methods: {
-    handleMoveEnd(evt) {
-      console.log("end", evt);
+    orderList() {
+      this.list = this.list.sort((one, two) => {
+        return one.order - two.order;
+      });
     },
-    handleMoveStart({ oldIndex }) {
-      console.log("start", oldIndex, this.basicComponents);
+    onMove({ relatedContext, draggedContext }) {
+      console.log(relatedContext, draggedContext);
+      const relatedElement = relatedContext.element;
+      const draggedElement = draggedContext.element;
+      return (
+        (!relatedElement || !relatedElement.fixed) && !draggedElement.fixed
+      );
+    }
+  },
+  computed: {
+    leftDragOptions() {
+      return {
+        animation: 200, // number 单位：ms，定义排序动画的时间；
+        group: { name: "description", pull: "clone", put: false },
+        sort: true,
+        disabled: !this.editable, // 为true时sortable对象不能拖放排序等功能，为false时为可以进行排序，
+        ghostClass: "ghost" // 此配置项就是来给这个影子单元添加一个class，
+      };
     },
-    handleMove() {
-      return true;
+    mainDragOptions() {
+      return {
+        animation: 200, // number 单位：ms，定义排序动画的时间；
+        group: { name: "description", pull: "clone", put: true },
+        disabled: !this.editable, // 为true时sortable对象不能拖放排序等功能，为false时为可以进行排序，
+        ghostClass: "ghost" // 此配置项就是来给这个影子单元添加一个class，
+      };
+    },
+    listString() {
+      return JSON.stringify(this.list, null, 2);
+    },
+    list2String() {
+      return JSON.stringify(this.list2, null, 2);
+    }
+  },
+  watch: {
+    isDragging(newValue) {
+      if (newValue) {
+        this.delayedDragging = true;
+        return;
+      }
+      this.$nextTick(() => {
+        this.delayedDragging = false;
+      });
     }
   }
 };
