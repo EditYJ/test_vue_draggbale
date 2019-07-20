@@ -49,9 +49,27 @@ $primary-background-color: #ecf5ff;
     min-height: 50%;
     font-size: 0;
     li{
+      position: relative;
       border: 1px solid $primary-background-color;
       &:hover {
         border: 1px solid $primary-color;
+      }
+      &.active{
+        border: 1px solid $primary-color;
+        border-left: 5px solid $primary-color;
+      }
+      .widget-action-delete{
+        position: absolute;
+        right: 20px;
+        bottom: -18px;
+        z-index: 9;
+      }
+  
+      .widget-action-clone{
+        position: absolute;
+        right: 70px;
+        bottom: -18px;
+        z-index: 9;
       }
     }
   }
@@ -69,5 +87,28 @@ $primary-background-color: #ecf5ff;
   width: 0px;
 }
 
+// 右侧部分
+.right-container{
+  position: relative;
 
+  .el-header{
+    border-bottom: solid 2px #e4e7ed;
+    padding: 0 5px;
+  }
 
+  .config-tab{
+    height: 45px;
+    line-height: 45px;
+    display: inline-block;
+    width: 50%;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    position: relative;
+    cursor: pointer;
+
+    &.active{
+      border-bottom: solid 2px $primary-color;
+    }
+  }
+}
