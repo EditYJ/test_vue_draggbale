@@ -20,7 +20,7 @@
         @end="isDragging=false"
       >
         <transition-group type="transition" :name="'flip-list'">
-          <li v-for="(element,index) in leftWeidgetList" :key="index">
+          <li v-for="(element) in leftWeidgetList" :key="element.type">
             <img width="100%" :src="element.imgSrc" alt="占位图" srcset />
           </li>
         </transition-group>
