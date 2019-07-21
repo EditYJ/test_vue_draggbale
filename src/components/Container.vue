@@ -8,7 +8,7 @@
     </el-aside>
 
     <!-- 左侧内容 -->
-    <el-aside class="left-container">
+    <el-aside class="left-container" style="width:450px">
       <div class="widget-group-title">布局一</div>
       <draggable
         class="list-group"
