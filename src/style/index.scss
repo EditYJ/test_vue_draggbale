@@ -49,6 +49,7 @@ $primary-background-color: #ecf5ff;
     min-height: 50%;
     font-size: 0;
     li{
+      width: 100%;
       position: relative;
       border: 1px solid $primary-background-color;
       &:hover {

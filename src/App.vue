@@ -5,8 +5,17 @@
 </template>
 
 <script>
+import operator_store from "./components/provider/OperatorStore";
 export default {
-  name: "app"
+  name: "app",
+  // 混入运营主页管理模块数据管理
+  mixins: [operator_store],
+  //暴露全局app
+  provide() {
+    return {
+      app: this
+    };
+  }
 };
 </script>
 

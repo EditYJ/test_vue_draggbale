@@ -9,22 +9,24 @@
 
     <!-- 左侧内容 -->
     <el-aside class="left-container" style="width:450px">
-      <div class="widget-group-title">布局一</div>
-      <draggable
-        class="list-group"
-        tag="ul"
-        :list="leftWeidgetList"
-        v-bind="leftDragOptions"
-        :move="onMove"
-        @start="isDragging=true"
-        @end="isDragging=false"
-      >
-        <transition-group type="transition" :name="'flip-list'">
-          <li v-for="(element) in leftWeidgetList" :key="element.type">
-            <img width="100%" :src="element.imgSrc" alt="占位图" srcset />
-          </li>
-        </transition-group>
-      </draggable>
+      <div v-for="item in leftWeidgetList" :key="item.title">
+        <div class="widget-group-title">{{item.title}}</div>
+        <draggable
+          class="list-group"
+          tag="ul"
+          :list="item.list"
+          v-bind="leftDragOptions"
+          :move="onMove"
+          @start="isDragging=true"
+          @end="isDragging=false"
+        >
+          <transition-group type="transition" :name="'flip-list'">
+            <li v-for="(element) in item.list" :key="element.type">
+              <img width="100%" :src="element.imgSrc" alt="占位图" srcset />
+            </li>
+          </transition-group>
+        </draggable>
+      </div>
     </el-aside>
 
     <!-- 主体内容 -->
@@ -41,7 +43,7 @@
             class="list-group-item"
             v-for="(element,index) in centerDataList"
             :class="{active: selectWidget.key == element.key}"
-            :style="`margin-top: ${element.options.marginTop}px;margin-bottom: ${element.options.marginBottom}px;`"
+            :style="`margin-top: ${element.options.marginTop}px;margin-bottom: ${element.options.marginBottom}px;float:left;`"
             :key="element.key"
             @click="handleSelectWidget(index)"
           >
@@ -89,7 +91,7 @@
       </el-header>
       <el-main>
         <widget-config v-show="configTab=='only'" :data="selectWidget"></widget-config>
-        <general-settings v-show="configTab=='all'" :data="generalSettingsData"></general-settings>
+        <general-settings v-show="configTab=='all'" :data="app.generalSettingsData"></general-settings>
       </el-main>
     </el-container>
   </el-container>
@@ -99,6 +101,7 @@
 import draggable from "vuedraggable";
 import WidgetConfig from "./WidgetConfig";
 import GeneralSettings from "./GeneralSettings";
+import leftWeidgetList from "./provider/LeftWeidgetList";
 
 // 生成唯一Key
 function makeKey() {
@@ -106,6 +109,7 @@ function makeKey() {
 }
 export default {
   name: "hello",
+  inject: ["app"],
   components: {
     draggable,
     WidgetConfig,
@@ -113,53 +117,7 @@ export default {
   },
   data() {
     return {
-      leftWeidgetList: [
-        {
-          type: "type01",
-          imgSrc:
-            "https://dummyimage.com/750x400/cccccc/ffffff.png&text=Type01",
-          options: {
-            marginTop: 0,
-            marginBottom: 0,
-            anythingElse: {}
-          }
-        },
-        {
-          type: "type02",
-          imgSrc:
-            "https://dummyimage.com/750x400/cccccc/ffffff.png&text=Type02",
-          options: {
-            marginTop: 0,
-            marginBottom: 0,
-            anythingElse: {}
-          }
-        },
-        {
-          type: "type03",
-          imgSrc:
-            "https://dummyimage.com/750x400/cccccc/ffffff.png&text=Type03",
-          options: {
-            marginTop: 0,
-            marginBottom: 0,
-            anythingElse: {}
-          }
-        },
-        {
-          type: "type04",
-          imgSrc:
-            "https://dummyimage.com/750x400/cccccc/ffffff.png&text=Type04",
-          options: {
-            marginTop: 0,
-            marginBottom: 0,
-            anythingElse: {}
-          }
-        }
-      ],
-      // 总体设置
-      generalSettingsData: {
-        indexPageName: "",
-        indexId: ""
-      },
+      leftWeidgetList: leftWeidgetList,
       centerDataList: [],
       configTab: "only",
       isDragging: false,
@@ -262,7 +220,7 @@ export default {
       return JSON.stringify(this.centerDataList, null, 2);
     },
     generalSettingsDataString() {
-      return JSON.stringify(this.generalSettingsData, null, 2);
+      return JSON.stringify(this.app.generalSettingsData, null, 2);
     }
   },
   watch: {
