@@ -57,7 +57,7 @@ const leftWeidgetList = [
           marginTop: 0,
           marginBottom: 0,
           navNum: 8,
-          anythingElse: {}
+          dataList:[{},{},{},{},{},{},{},{}]
         }
       }
     ]

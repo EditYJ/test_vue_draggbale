@@ -58,6 +58,14 @@ export default {
           element.imgSrc = imgUrl;
         }
       });
+    },
+
+    // 传入导航个数 产生对应数量的设置项
+    changeNavOptionListNum(num) {
+      this.selectWidget.options.dataList.length = 0;
+      for (let i = 0; i < num; i++) {
+        this.selectWidget.options.dataList.push({});
+      }
     }
   }
 };
