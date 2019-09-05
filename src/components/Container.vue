@@ -1,6 +1,8 @@
 <template>
   <el-container style="height:100%;">
     <el-aside>
+            <p>当前选中数据</p>
+      <pre>{{selectWidgetString}}</pre>
       <p>主体数据</p>
       <pre>{{centerDataListString}}</pre>
       <p>总体设置数据</p>
@@ -33,7 +35,7 @@
     <el-aside style="width:450px" class="center-container">
       <draggable
         element="span"
-        v-model="centerDataList"
+        v-model="app.centerDataList"
         v-bind="mainDragOptions"
         :move="onMove"
         @add="handleWidgetAdd"
@@ -41,8 +43,8 @@
         <transition-group name="no" class="list-group" tag="ul">
           <li
             class="list-group-item"
-            v-for="(element,index) in centerDataList"
-            :class="{active: selectWidget.key == element.key}"
+            v-for="(element,index) in app.centerDataList"
+            :class="{active: app.selectWidget.key == element.key}"
             :style="`margin-top: ${element.options.marginTop}px;margin-bottom: ${element.options.marginBottom}px;float:left;`"
             :key="element.key"
             @click="handleSelectWidget(index)"
@@ -52,7 +54,7 @@
               title="删除"
               @click.stop="handleWidgetDelete(index)"
               class="widget-action-delete"
-              v-if="selectWidget.key == element.key"
+              v-if="app.selectWidget.key == element.key"
               circle
               plain
               type="danger"
@@ -63,7 +65,7 @@
               title="复制"
               @click.stop="handleWidgetClone(index)"
               class="widget-action-clone"
-              v-if="selectWidget.key == element.key"
+              v-if="app.selectWidget.key == element.key"
               circle
               plain
               type="primary"
@@ -90,8 +92,8 @@
         >表单属性</div>
       </el-header>
       <el-main>
-        <widget-config v-show="configTab=='only'" :data="selectWidget"></widget-config>
-        <general-settings v-show="configTab=='all'" :data="app.generalSettingsData"></general-settings>
+        <widget-config v-show="configTab=='only'"></widget-config>
+        <general-settings v-show="configTab=='all'"></general-settings>
       </el-main>
     </el-container>
   </el-container>
@@ -102,11 +104,8 @@ import draggable from "vuedraggable";
 import WidgetConfig from "./WidgetConfig";
 import GeneralSettings from "./GeneralSettings";
 import leftWeidgetList from "./provider/LeftWeidgetList";
+import { makeKey } from "./util/common";
 
-// 生成唯一Key
-function makeKey() {
-  return Date.parse(new Date()) + "_" + Math.ceil(Math.random() * 99999);
-}
 export default {
   name: "hello",
   inject: ["app"],
@@ -118,36 +117,25 @@ export default {
   data() {
     return {
       leftWeidgetList: leftWeidgetList,
-      centerDataList: [],
       configTab: "only",
       isDragging: false,
       delayedDragging: false,
-      selectWidget: ""
     };
   },
   methods: {
     // 处理组件添加到主容器事件
     handleWidgetAdd(event) {
-      console.info("添加事件数据", event);
-      const key = makeKey();
+      console.info("添加事件event打印==>>", event);
       const newIndex = event.newIndex;
       //为拖拽到容器的元素添加唯一 key
-      this.$set(this.centerDataList, newIndex, {
-        ...this.centerDataList[newIndex],
-        options: {
-          ...this.centerDataList[newIndex].options
-        },
-        key,
-        model: this.centerDataList[newIndex].type + "_" + key
-      });
+      this.app.setPrimaryKey(newIndex)
       // 指定当前选择为新加入的组件
-      this.selectWidget = this.centerDataList[newIndex];
+      this.app.setSelectWidget(newIndex);
     },
-
     //处理选中事件
     handleSelectWidget(index) {
       console.log("选中第" + index + "个");
-      this.selectWidget = this.centerDataList[index];
+      this.app.setSelectWidget(index);
     },
 
     onMove({ relatedContext, draggedContext }) {
@@ -163,20 +151,18 @@ export default {
     handleWidgetDelete(index) {
       console.info("删除: ", index);
       // 如果删除的是最后一个组件(自动选择删除组件的上一个)
-      if (this.centerDataList.length - 1 === index) {
+      if (this.app.centerDataList.length - 1 === index) {
         // 如果只有一个组件
         if (index === 0) {
-          this.selectWidget = {};
+          this.app.setSelectWidget()
         } else {
-          this.selectWidget = this.centerDataList[index - 1];
+          this.app.setSelectWidget(index - 1);
         }
       } else {
         // 自动选择删除组件的下一个
-        this.selectWidget = this.centerDataList[index + 1];
+        this.app.setSelectWidget(index + 1);
       }
-      // this.$nextTick(() => {
-      this.centerDataList.splice(index, 1);
-      // });
+      this.app.centerDataList.splice(index, 1);
     },
 
     // 复制选中组件(包含内容) 并在粘贴在下方
@@ -184,12 +170,12 @@ export default {
       console.info("复制: ", index);
       // 复制后仅有key变了
       let cloneData = {
-        ...this.centerDataList[index],
-        options: { ...this.centerDataList[index].options },
+        ...this.app.centerDataList[index],
+        options: { ...this.app.centerDataList[index].options },
         key: makeKey()
       };
-      this.centerDataList.splice(index + 1, 0, cloneData);
-      this.selectWidget = this.centerDataList[index + 1];
+      this.app.centerDataList.splice(index + 1, 0, cloneData);
+      this.app.setSelectWidget(index + 1);
     },
 
     // 切换配置页面
@@ -213,14 +199,19 @@ export default {
         ghostClass: "ghost" // 此配置项就是来给这个影子单元添加一个class，
       };
     },
+
+    ////////////////////==数据展示部分==////////////////////
     listString() {
       return JSON.stringify(this.leftWeidgetList, null, 2);
     },
     centerDataListString() {
-      return JSON.stringify(this.centerDataList, null, 2);
+      return JSON.stringify(this.app.centerDataList, null, 2);
     },
     generalSettingsDataString() {
       return JSON.stringify(this.app.generalSettingsData, null, 2);
+    },
+    selectWidgetString(){
+      return JSON.stringify(this.app.selectWidget, null, 2);
     }
   },
   watch: {
