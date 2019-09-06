@@ -53,6 +53,7 @@ const leftWeidgetList = [
         name: "导航组件",
         type: "navigation_widget",
         imgSrc: require("../../assets/imgs/Nav_Eight.png"),
+        isConfirm: false,
         options: {
           marginTop: 0,
           marginBottom: 0,

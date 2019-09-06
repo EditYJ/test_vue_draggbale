@@ -1,7 +1,7 @@
 <template>
   <el-container style="height:100%;">
     <el-aside>
-            <p>当前选中数据</p>
+      <p>当前选中数据</p>
       <pre>{{selectWidgetString}}</pre>
       <p>主体数据</p>
       <pre>{{centerDataListString}}</pre>
@@ -104,7 +104,7 @@ import draggable from "vuedraggable";
 import WidgetConfig from "./WidgetConfig";
 import GeneralSettings from "./GeneralSettings";
 import leftWeidgetList from "./provider/LeftWeidgetList";
-import { makeKey } from "./util/common";
+import { makeKey, copyObj } from "./util/common";
 
 export default {
   name: "hello",
@@ -119,7 +119,7 @@ export default {
       leftWeidgetList: leftWeidgetList,
       configTab: "only",
       isDragging: false,
-      delayedDragging: false,
+      delayedDragging: false
     };
   },
   methods: {
@@ -127,17 +127,17 @@ export default {
     handleWidgetAdd(event) {
       console.info("添加事件event打印==>>", event);
       const newIndex = event.newIndex;
-      //为拖拽到容器的元素添加唯一 key
-      this.app.setPrimaryKey(newIndex)
-      // 指定当前选择为新加入的组件
-      this.app.setSelectWidget(newIndex);
+      this.app.setPrimaryKey(newIndex); //为拖拽到容器的元素添加唯一 key
+      this.app.setSelectWidget(newIndex); // 指定当前选择为新加入的组件
     },
+    
     //处理选中事件
     handleSelectWidget(index) {
-      console.log("选中第" + index + "个");
+      console.log(`选中第 ${index} 个`);
       this.app.setSelectWidget(index);
     },
 
+    // 处理移动事件
     onMove({ relatedContext, draggedContext }) {
       console.log(relatedContext, draggedContext);
       const relatedElement = relatedContext.element;
@@ -154,7 +154,7 @@ export default {
       if (this.app.centerDataList.length - 1 === index) {
         // 如果只有一个组件
         if (index === 0) {
-          this.app.setSelectWidget()
+          this.app.setSelectWidget();
         } else {
           this.app.setSelectWidget(index - 1);
         }
@@ -170,8 +170,7 @@ export default {
       console.info("复制: ", index);
       // 复制后仅有key变了
       let cloneData = {
-        ...this.app.centerDataList[index],
-        options: { ...this.app.centerDataList[index].options },
+        ...copyObj(this.app.centerDataList[index]),
         key: makeKey()
       };
       this.app.centerDataList.splice(index + 1, 0, cloneData);
@@ -210,7 +209,7 @@ export default {
     generalSettingsDataString() {
       return JSON.stringify(this.app.generalSettingsData, null, 2);
     },
-    selectWidgetString(){
+    selectWidgetString() {
       return JSON.stringify(this.app.selectWidget, null, 2);
     }
   },

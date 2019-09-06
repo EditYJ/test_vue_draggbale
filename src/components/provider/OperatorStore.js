@@ -60,7 +60,13 @@ export default {
       });
     },
 
-    // 传入导航个数 产生对应数量的设置项
+    // 改变选中组件编辑确认情况
+    setSelectWidgetConfirm(boolVal) {
+      this.selectWidget.isConfirm = boolVal;
+    },
+
+    // == 导航组件 == //
+    // 传入导航个数 产生对应数量的设置项 装入对应组件
     changeNavOptionListNum(num) {
       this.selectWidget.options.dataList.length = 0;
       for (let i = 0; i < num; i++) {
