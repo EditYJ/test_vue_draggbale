@@ -26,7 +26,7 @@
           <el-button type="success" @click="editContent">编辑</el-button>
           <el-button type="primary" @click="confirmContent">确认</el-button>
         </el-button-group>
-        <el-button style="float:right;margin-right:15px;" type="danger" plain>重置</el-button>
+        <el-button style="float:right;margin-right:15px;" type="danger" plain @click="resetContent">重置</el-button>
       </h4>
 
       <el-table :data="app.selectWidget.options.dataList" style="width: 100%;">
@@ -126,6 +126,11 @@ export default {
     editContent() {
       console.log("编辑总体设置...");
       this.app.setSelectWidgetConfirm(false)
+    },
+
+    //重置按钮
+    resetContent() {
+      this.app.resetSelectWidgetContent()
     }
   }
 };

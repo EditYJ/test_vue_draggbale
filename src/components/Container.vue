@@ -46,7 +46,7 @@
             v-for="(element,index) in app.centerDataList"
             :class="{active: app.selectWidget.key == element.key}"
             :style="`margin-top: ${element.options.marginTop}px;margin-bottom: ${element.options.marginBottom}px;float:left;`"
-            :key="element.key"
+            :key="`${index}_${element.type}`"
             @click="handleSelectWidget(index)"
           >
             <img width="100%" :src="element.imgSrc" alt="占位图" srcset />
@@ -130,7 +130,7 @@ export default {
       this.app.setPrimaryKey(newIndex); //为拖拽到容器的元素添加唯一 key
       this.app.setSelectWidget(newIndex); // 指定当前选择为新加入的组件
     },
-    
+
     //处理选中事件
     handleSelectWidget(index) {
       console.log(`选中第 ${index} 个`);
@@ -149,7 +149,7 @@ export default {
 
     // 删除选中组件
     handleWidgetDelete(index) {
-      console.info("删除: ", index);
+      console.log(`删除: ${index}`);
       // 如果删除的是最后一个组件(自动选择删除组件的上一个)
       if (this.app.centerDataList.length - 1 === index) {
         // 如果只有一个组件

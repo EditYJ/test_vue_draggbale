@@ -1,3 +1,7 @@
+/**
+ * `类型静态变量`: 导航组件
+ */
+export const NAVIGATION_WIDGET = 'navigation_widget'
 
 // 左侧组件初始化数据
 const leftWeidgetList = [
@@ -49,16 +53,16 @@ const leftWeidgetList = [
   {
     title: "导航组件",
     list: [
-      { 
+      {
         name: "导航组件",
-        type: "navigation_widget",
+        type: NAVIGATION_WIDGET,
         imgSrc: require("../../assets/imgs/Nav_Eight.png"),
         isConfirm: false,
         options: {
           marginTop: 0,
           marginBottom: 0,
           navNum: 8,
-          dataList:[{},{},{},{},{},{},{},{}]
+          dataList: [{}, {}, {}, {}, {}, {}, {}, {}]
         }
       }
     ]

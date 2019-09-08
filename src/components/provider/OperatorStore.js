@@ -1,4 +1,5 @@
 import { makeKey, copyObj } from "../util/common";
+import { NAVIGATION_WIDGET } from "./LeftWeidgetList"
 
 export default {
   data() {
@@ -63,6 +64,23 @@ export default {
     // 改变选中组件编辑确认情况
     setSelectWidgetConfirm(boolVal) {
       this.selectWidget.isConfirm = boolVal;
+    },
+
+    // 根据选择的控件类型重置需要重置的内容
+    resetSelectWidgetContent() {
+      console.log(`进入重置选中控件函数内容函数，当前选择类型为==>>${this.selectWidget.type}`)
+      switch (this.selectWidget.type) {
+        case NAVIGATION_WIDGET:
+          this.selectWidget.options.dataList.forEach(item => {
+            for (let key in item) {
+              item[key] = undefined
+            }
+          })
+          break;
+
+        default:
+          break;
+      }
     },
 
     // == 导航组件 == //
